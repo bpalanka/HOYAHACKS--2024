@@ -1,2 +1,4 @@
-// this is a test to see if the code works
-// second test
+//test
+public static void main(String[] args) {
+    System.out.println("Hello world!");
+}
