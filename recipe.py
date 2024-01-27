@@ -18,7 +18,7 @@ csv_file_path = "./Ingredients2.csv"
 try:
     # Read the CSV file into a DataFrame
     df = pd.read_csv(csv_file_path) # df["Ingredients"] - to access ingredients.
-    allIngredients = df["Ingredients"].str.split(",") # pandas uses str.split() rather than the normal .split() for strings. this command splits the ingredient column by commas. 
+    allIngredients = df["Ingredients"].str.split("', '") # pandas uses str.split() rather than the normal .split() for strings. this command splits the ingredient column by commas. 
     #print(allIngredients)
 
     #for index, ingredients_list in allIngredients.items() : # index = 0, ingredients_list in 
@@ -30,7 +30,7 @@ try:
     ingredientInput = input("Welcome to recipe finder! Please enter the ingredients you have split by commas.\n")
     #print(ingredientInput)
     print("We have processed your information!")
-    ingredientsList = ingredientInput.split(",") # list of ingredients that were input
+    ingredientsList = ingredientInput.split("', '") # list of ingredients that were input
     #print("YAY")
     #print(ingredientsList)
     
@@ -78,7 +78,7 @@ try:
     #instructions
     instructList = df["Instructions"]
     print("Instructions: ")
-    print(instructList[index])
+    print(instructList[index][0])
     
     #reminder: set up liver cleanse appointment
 
