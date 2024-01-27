@@ -24,13 +24,12 @@ try:
     #testing with chicken as user input
     userlist = ['chicken']
     userlist.append('butter')
-
+    
 
     #for loop to iterate through the ingredient list
     ingredientList = ['1 (3Â½â€“4-lb.) whole chicken', '2Â¾ tsp. kosher salt', 'divided, plus more', '2 small acorn squash (about 3 lb. total)', '2 Tbsp. finely chopped sage', '1 Tbsp. finely chopped rosemary', '6 Tbsp. unsalted butter']
     print(len(ingredientList))
 
-    print(userlist[1])
     #two for loops to iterate through both lists + check if ingredient list has all of the items in userlist
     for i in range(len(userlist)):
             for j in range(len(ingredientList)):
