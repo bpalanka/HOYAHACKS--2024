@@ -78,7 +78,7 @@ try:
     #instructions
     instructList = df["Instructions"]
     print("Instructions: ")
-    print(instructList[index][0])
+    print(instructList[index])
     
     #reminder: set up liver cleanse appointment
 
