@@ -13,29 +13,29 @@ except Exception as e:
 
 """
 # Make sure to use the correct path to your CSV file
-csv_file_path = "./Ingredients2.csv" # created Ingredients2.csv to test with a smaller set of data.
+csv_file_path = "./Ingredients2.csv"
 
 try:
     # Read the CSV file into a DataFrame
-    df = pd.read_csv(csv_file_path)
-    print(df)
+    df = pd.read_csv(csv_file_path) # df["Ingredients"] - to access ingredients.
+    allIngredients = df["Ingredients"].str.split(",") # pandas uses str.split() rather than the normal .split() for strings. this command splits the ingredient column by comas. 
+    print(allIngredients)
 
-    #*******************************CHANGES MADE STARTING FROM HERE 
-    #testing with chicken as user input
-    userlist = ['chicken']
-    userlist.append('butter')
+    for index, ingredients_list in allIngredients.items() : # index = 0, ingredients_list in 
+        print(f"Recipe {index} ingredients:")
+        for ingredient in ingredients_list:
+            print(ingredient.strip())
+        print()
+
+    ingredientInput = "flour, chicken" # ingredients
+    print(ingredientInput)
+
+    ingredientsList = [ingredientInput.split(",")] # list of ingredients that were input
+    print(ingredientsList)
     
 
-    #for loop to iterate through the ingredient list
-    ingredientList = ['1 (3Â½â€“4-lb.) whole chicken', '2Â¾ tsp. kosher salt', 'divided, plus more', '2 small acorn squash (about 3 lb. total)', '2 Tbsp. finely chopped sage', '1 Tbsp. finely chopped rosemary', '6 Tbsp. unsalted butter']
-    print(len(ingredientList))
-
-    #two for loops to iterate through both lists + check if ingredient list has all of the items in userlist
-    for i in range(len(userlist)):
-            for j in range(len(ingredientList)):
-                if userlist[i] in ingredientList[j]:
-                    print("YAY")
-            
+    page = """
+    """
 
 except pd.errors.EmptyDataError:
     print("The CSV file is empty.")
@@ -44,3 +44,9 @@ except FileNotFoundError:
 except Exception as e:
     print(f"An error occurred: {e}")
 
+def addToList(ingredientInput): # upon submission of the ingredients, run this function
+    # ingredients seperated by commas
+    ingredientsList = ingredientInput.split(",")
+
+#for recipes: if the user has all ingredients let them know
+#if user is missing some ingredients, let them know
