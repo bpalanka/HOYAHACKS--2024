@@ -18,8 +18,8 @@ csv_file_path = "./Ingredients2.csv"
 try:
     # Read the CSV file into a DataFrame
     df = pd.read_csv(csv_file_path) # df["Ingredients"] - to access ingredients.
-    allIngredients = df["Ingredients"].str.split(",") # pandas uses str.split() rather than the normal .split() for strings. this command splits the ingredient column by comas. 
-    print(allIngredients)
+    allIngredients = df["Ingredients"].str.split(",") # pandas uses str.split() rather than the normal .split() for strings. this command splits the ingredient column by commas. 
+    #print(allIngredients)
 
     #for index, ingredients_list in allIngredients.items() : # index = 0, ingredients_list in 
         #print(f"Recipe {index} ingredients:")
@@ -28,11 +28,11 @@ try:
         #print()
 
     ingredientInput = "flour, chicken" # ingredients
-    print(ingredientInput)
+    #print(ingredientInput)
 
     ingredientsList = ingredientInput.split(",") # list of ingredients that were input
-    print("YAY")
-    print(ingredientsList)
+    #print("YAY")
+    #print(ingredientsList)
     
     #iterate ingredientInput + ingredient list
 
@@ -43,11 +43,6 @@ try:
     max = 0
     index = 0
 
-    #ALL INGREDIENTS IN THE DATABASE
-    print("first element in all ingredients")
-    print(allIngredients[0])
-    print("first ingredient in recipe")
-    print(allIngredients[0][0])
 
     
     for i in range(len(allIngredients)):
@@ -58,23 +53,34 @@ try:
              
              for k in range(len(ingredientsList)):
                  if(ingredientsList[k] in allIngredients[i][j]):
-                     print("index", i)
-                     print("ingredlist K", ingredientsList[k])
                      count += 1
-                     print("count of ingredients", count)
         if(count > max):
             max = count
             index = i
-    print(allIngredients[index])
+    #print(allIngredients[index])
+
+
+    #*****DISPLAYING***********
     #display the info for the recipe that matches (use index variable in the nested for loops above)
-            
+    print("We found a recipe that contains the list of ingredients that you have listed.")
 
+    #find recipe name
+    recipeName = df["Title"]
 
+    #recipe name
+    print("Recipe Name: ",recipeName[index])
+
+    #ingredients
+    print("Ingredients: ")
+    for i in range(len(allIngredients[index])):
+        print(i+1,"",allIngredients[index][i])
+
+    #instructions
+    instructList = df["Instructions"]
+    print("Instructions: ")
+    print(instructList[index])
     
-
-    #display the recipe at index
-    
-        #print(allIngredients[index])
+    #reminder: set up liver cleanse appointment
 
     page = """
     """
