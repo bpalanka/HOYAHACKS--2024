@@ -52,18 +52,20 @@ try:
     
     for i in range(len(allIngredients)):
         #LIST OF INGREDIENTS WITHIN A RECIPE
+        count = 0
         for j in range(len(allIngredients[i])):
              #COMPARE INPUT LIST AND allIngredients[i]
+             
              for k in range(len(ingredientsList)):
                  if(ingredientsList[k] in allIngredients[i][j]):
-                     print("ingredlist K")
-                     print(ingredientsList[k])
                      print("index", i)
+                     print("ingredlist K", ingredientsList[k])
                      count += 1
+                     print("count of ingredients", count)
         if(count > max):
             max = count
             index = i
-    #print(ingredientsList)
+    print(allIngredients[index])
     #display the info for the recipe that matches (use index variable in the nested for loops above)
             
 
