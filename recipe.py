@@ -26,10 +26,10 @@ try:
         #for ingredient in ingredients_list:
             #print(ingredient.strip())
         #print()
-
-    ingredientInput = "flour, chicken" # ingredients
+    #user input
+    ingredientInput = input("Welcome to recipe finder! Please enter the ingredients you have split by commas.\n")
     #print(ingredientInput)
-
+    print("We have processed your information!")
     ingredientsList = ingredientInput.split(",") # list of ingredients that were input
     #print("YAY")
     #print(ingredientsList)
