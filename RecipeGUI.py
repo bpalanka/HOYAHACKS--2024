@@ -2,7 +2,7 @@
 import pandas as pd
 import taipy
 import csv
-from taipy.gui import Gui
+from taipy.gui import Gui, Html
 import taipy.gui.builder as tgb
 
 # Read csv file into data frame
@@ -11,8 +11,9 @@ csv_file_path = "./Ingredients2.csv"
 # Attributes
 ingredientInput = ""
 allergyInput = ""
-final_output = "test"
-input_rendered = False
+final_instructions = ""
+final_ingredients = ""
+recipe_name = ""
 
 try:
     df = pd.read_csv(csv_file_path)
@@ -29,10 +30,19 @@ def on_action(state, id):
     if id == "submitIngredients": # when you press the submit button for ingredients, this happens
         ingredientInput = state.ingredientInput.split(", ")
         index = find_matches()
-        final_output = find_recipe(index)
-        #state.dynamic_content.update_content(state, '<|{final_output}|>')
-        state.input_rendered = True
-        # additional processing ...
+        recipe_name, final_ingredients, final_instructions = find_recipe(index)
+        page = Html("""<taipy:text> {recipe_name} </taipy:text>
+                     <br></br>
+                     <br></br>
+                    <taipy:text>Ingredients: </taipy:text>
+                    <br></br>
+                    <taipy:text> {final_ingredients}</taipy:text>
+                    <br></br>
+                    <br></br>
+                    <taipy:text>Instructions: </taipy:text>
+                    <br></br>
+                    <taipy:text>{final_instructions}</taipy:text>""")
+        Gui(page).run()
 
 # Function to process user input and find recipes
 def findIngredients(ingredients_list):
@@ -72,16 +82,24 @@ def find_recipe(index):
     print("We found a recipe that contains the list of ingredients that you have listed.")
 
     #find recipe name
-    recipeName = df["Title"]
+    recipe_name = df["Title"]
 
     #recipe name
-    print("Recipe Name: ",recipeName[index])
+    print("Recipe Name: ", recipe_name[index])
+
+    # Ingredients
+    print("Ingredients: ")
+    ingredient_list = []
+    #print(allIngredients[index])
+    for i in range(len(allIngredients[index])):
+        ingredient_list.append(allIngredients[index][i])
+        #print(allIngredients[index][i])
 
     #instructions
     instructList = df["Instructions"]
-    print("Instructions: ", instructList[index])
+    #print("Instructions: ", instructList[index])
 
-    return instructList[index]
+    return recipe_name[index], ingredient_list, instructList[index]
 
 # Set up GUI
 with tgb.Page() as page:
@@ -92,11 +110,9 @@ with tgb.Page() as page:
             tgb.input("{ingredientInput}", label="List your ingredients...")
             #tgb.input("{allergyInput}", "Any ingredients to avoid?", label="List your allergies and avoidances...")
         tgb.button("Submit", id="submitIngredients")
-        with tgb.part(render='{input_rendered}'):
-                tgb.input(final_output)
 
 # Run the GUI
-Gui(page).run(port=5005)
+Gui(page=page).run(port=5005)
 
 
 
