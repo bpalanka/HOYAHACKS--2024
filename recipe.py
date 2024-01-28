@@ -2,8 +2,7 @@
 import pandas as pd
 import taipy
 import csv
-from taipy.gui import Gui
-from taipy.gui import Gui, State
+from taipy.gui import Gui, Html
 import taipy.gui.builder as tgb
 import taipy as tp
 
@@ -56,35 +55,24 @@ def on_action(state, id): # method MUST be named as "on_action" format (bc of Ta
         #print(userAllergy)
             
         #look for inputs in the recipes
-        findRecipes(userIngredient, userAllergy)
-
-def print_recipe(index):
-    df = pd.read_csv(csv_file_path) # df["Ingredients"] - to access ingredients.
-    allIngredients = df["Ingredients"].str.split("', '")
-
-    #*****DISPLAYING***********
-    #display the info for the recipe that matches (use index variable in the nested for loops above)
-    print("We found a recipe that contains the list of ingredients that you have listed.")
-
-    #find recipe name
-    recipeName = df["Title"]
-
-    #recipe name
-    print("Recipe Name: ",recipeName[index])
-
-    #ingredients
-    # print("Ingredients: ")
-    # for i in range(len(allIngredients[index])):
-    #     print(i+1,"",allIngredients[index][i])
-
-    #instructions
-    instructList = df["Instructions"]
-    #print("Instructions: ")
-    print(instructList[index])
-
-    return instructList[index]
-
-
+        final_rec = findRecipes(userIngredient, userAllergy)
+        page = Html("""<taipy:text> {final_rec[0]} </taipy:text>
+                    <br></br>
+                    <br></br>
+                    <taipy:text>Match %: </taipy:text>
+                    <br></br>
+                    <taipy:text> {final_rec[3]}</taipy:text>
+                    <taipy:text>Ingredients: </taipy:text>
+                    <br></br>
+                    <taipy:text> {final_rec[1]}</taipy:text>
+                    <br></br>
+                    <br></br>
+                    <taipy:text>Instructions: </taipy:text>
+                    <br></br>
+                    <taipy:text>{final_rec[2]}</taipy:text>
+                    
+                    """)
+        Gui(page).run()
 
 
 # Function to process user's ingredients and allergies, and then find recipes
@@ -140,13 +128,10 @@ def findRecipes(userIngredient, userAllergy):
 
         recommendations.append({ "title": title, "instructions": instructions, "ingredients": ingredients, "match": ingredientMatch })
     
-    finalRecommendations = recommendations  # Update state variable
-    #print(finalRecommendations)
-
-    #print(recs)
+    finalRecommendations = recommendations 
+    return finalRecommendations
 
 # Set up GUI
-
 with tgb.Page() as page:
     with tgb.layout("1"):
         with tgb.part():
