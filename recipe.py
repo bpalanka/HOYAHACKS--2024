@@ -3,7 +3,9 @@ import pandas as pd
 import taipy
 import csv
 from taipy.gui import Gui
+from taipy.gui import Gui, State
 import taipy.gui.builder as tgb
+import taipy as tp
 
 import ast # converting to list
 
@@ -11,8 +13,17 @@ import ast # converting to list
 csv_file_path = "./Ingredients2.csv"
 
 # Attributes
+#ingredientInput = ""
+#allergyInput = ""
+#finalRecommendations = []
+
+# init state
+#state=State()
 ingredientInput = ""
 allergyInput = ""
+finalRecommendations = []
+
+
 
 try:
     df = pd.read_csv(csv_file_path)
@@ -27,25 +38,51 @@ except Exception as e:
 def on_action(state, id): # method MUST be named as "on_action" format (bc of Taipy)
     if id == "submitIngredients": # when you press the submit button for ingredients, this happens
         # Accessing state variables
-        userIngredient = ""
-        userAllergy = ""
+        userIngredient = ingredientInput
+        userAllergy = allergyInput
 
         # putting the inputs into respective lists.
-        if("," not in state.ingredientInput):
-            userIngredient = [state.ingredientInput]
+        if("," not in ingredientInput):
+            userIngredient = [ingredientInput]
         else:
-            userIngredient = state.ingredientInput.split(", ")
+            userIngredient = ingredientInput.split(", ")
         
-        if("," not in state.allergyInput):
-            userAllergy = [state.allergyInput]
+        if("," not in allergyInput):
+            userAllergy = [allergyInput]
         else:
-            userAllergy = state.allergyInput.split(", ")
+            userAllergy = allergyInput.split(", ")
         
         #print(userIngredient) #tests
         #print(userAllergy)
             
         #look for inputs in the recipes
         findRecipes(userIngredient, userAllergy)
+
+def print_recipe(index):
+    df = pd.read_csv(csv_file_path) # df["Ingredients"] - to access ingredients.
+    allIngredients = df["Ingredients"].str.split("', '")
+
+    #*****DISPLAYING***********
+    #display the info for the recipe that matches (use index variable in the nested for loops above)
+    print("We found a recipe that contains the list of ingredients that you have listed.")
+
+    #find recipe name
+    recipeName = df["Title"]
+
+    #recipe name
+    print("Recipe Name: ",recipeName[index])
+
+    #ingredients
+    # print("Ingredients: ")
+    # for i in range(len(allIngredients[index])):
+    #     print(i+1,"",allIngredients[index][i])
+
+    #instructions
+    instructList = df["Instructions"]
+    #print("Instructions: ")
+    print(instructList[index])
+
+    return instructList[index]
 
 
 
@@ -58,6 +95,8 @@ def findRecipes(userIngredient, userAllergy):
 
     matchRatio = []
     
+    recommendations = []
+
     # Convert string rep of lists in 'Ingredients' to actual lists
     ingredientsToSearch = [ast.literal_eval(ingredients) for ingredients in df["Ingredients"]] # do NOT ask me how this works. -Arman
 
@@ -73,39 +112,38 @@ def findRecipes(userIngredient, userAllergy):
                     count += 1 
                     #print("User ingredient:", userIngredient[k]) #TEST
                     #print("Recipe ingredient:", ingredientsToSearch[i][j]) #TEST
-            #added to check for allergies
-            for a in range(len(userAllergy)):
-                if(userAllergy[a] in ingredientsToSearch[i][j]):
-                    count = 0
         counts.append(count)
     #print(counts) # TESTING
 
     for i in range(0, len(ingredientsToSearch)) :
         matchRatio.append([round(counts[i]/countsMax[i][0], 3), countsMax[i][1]]) # finds the percentage match between the ingredients and the recipes. the closer it is to 1, the better the match.
-    print(matchRatio) #TESTING
+    #print(matchRatio) #TESTING
 
     matchRatio.sort(reverse=True) # sorts greatest to least.
-    print(matchRatio) #TESTING
-    
-    recs = []
+    #print(matchRatio) #TESTING
 
-    for i in range(0, len(matchRatio)) :
+    #for i in range(0, len(matchRatio)) :
+    for i in range(min(4, len(matchRatio))) :
         #recs.append[[df["Title"].iloc[matchRatio[i][1]]], [df["Instructions"].iloc[matchRatio[i][1]]], [df["Ingredients"].iloc[matchRatio[i][1]]] ]
-        if(matchRatio[i] == 0):
+        if(matchRatio[i][0] == 0):
             break
-        print(df["Title"].iloc[matchRatio[i][1]])
-        print(df["Instructions"].iloc[matchRatio[i][1]])
-        print("Ingredients: ", end="")
+        
+        title = (df["Title"].iloc[matchRatio[i][1]])
+        instructions = (df["Instructions"].iloc[matchRatio[i][1]])
+        ingredients = "Ingredients: "
         for j in range(len(ingredientsToSearch[matchRatio[i][1]])): # printing the list of ingredients properly
             if(j != len(ingredientsToSearch[matchRatio[i][1]]) - 1):
-                print(ingredientsToSearch[matchRatio[i][1]][j], end=", ")
+                ingredients = ingredients + ingredientsToSearch[matchRatio[i][1]][j] + ", "
             else:
-                print(ingredientsToSearch[matchRatio[i][1]][j])
-        print("")
+                ingredients = ingredients + ingredientsToSearch[matchRatio[i][1]][j]
+        ingredientMatch = str(round(matchRatio[i][0] * 100, 3)) + "%"
+
+        recommendations.append({ "title": title, "instructions": instructions, "ingredients": ingredients, "match": ingredientMatch })
+    
+    finalRecommendations = recommendations  # Update state variable
+    #print(finalRecommendations)
+
     #print(recs)
-        
-
-
 
 # Set up GUI
 
@@ -122,12 +160,17 @@ with tgb.Page() as page:
             tgb.html("p", "Ingredients: {final_ingredients}")
             tgb.html("p", "Instructions: {final_instructions}")
 
+
+
+        #recommendation_elements = create_recommendation_elements(finalRecommendations)
+        #for element in recommendation_elements:
+        #    with tgb.part():
+        #        element
+
+
+
 # Run the GUI
 Gui(page).run(port=5006)
-
-
-
-
 
 
 #for recipes: if the user has all ingredients let them know
