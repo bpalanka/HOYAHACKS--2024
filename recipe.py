@@ -10,14 +10,13 @@ try:
     # Read the CSV file into a DataFrame
     df = pd.read_csv(csv_file_path) # df["Ingredients"] - to access ingredients.
     allIngredients = df["Ingredients"].str.split("', '") # pandas uses str.split() rather than the normal .split() for strings. this command splits the ingredient column by commas. 
-    
     #user input
     ingredientInput = input("Welcome to recipe finder! Please enter the ingredients you have split by commas.\n")
     
     #print(ingredientInput)
     print("We have processed your information!")
     ingredientsList = ingredientInput.split("', '") # list of ingredients that were input
-
+    
     #count variable to keep track of matches
     # max variable to keep track of max matches
     # index variable to keep track of index with max matches
@@ -53,13 +52,15 @@ try:
     for i in range(len(allIngredients[index])):
         print(i+1,"",allIngredients[index][i])
 
-    #instructions
+    #instructions - changes in these lines ****?
     instructList = df["Instructions"]
     print("Instructions: ")
-    print(instructList[index])
+        
+    instructList2 = instructList[index].split("\r\n")
 
-    page = """
-    """
+    #print("instructList2: ")
+    for i in range(len(instructList2)):
+        print(i+1, "", instructList2[i])
 
 except pd.errors.EmptyDataError:
     print("The CSV file is empty.")
