@@ -56,23 +56,70 @@ def on_action(state, id): # method MUST be named as "on_action" format (bc of Ta
             
         #look for inputs in the recipes
         final_rec = findRecipes(userIngredient, userAllergy)
-        page = Html("""<taipy:text> {final_rec[0]} </taipy:text>
+        page = Html("""
+                    <taipy:text> {final_rec[0][0]} </taipy:text>
                     <br></br>
                     <br></br>
                     <taipy:text>Match %: </taipy:text>
                     <br></br>
-                    <taipy:text> {final_rec[3]}</taipy:text>
+                    <br></br>
+                    <taipy:text> {final_rec[0][3]}</taipy:text>
                     <taipy:text>Ingredients: </taipy:text>
                     <br></br>
-                    <taipy:text> {final_rec[1]}</taipy:text>
+                    <br></br>
+                    <taipy:text> {final_rec[0][2]}</taipy:text>
                     <br></br>
                     <br></br>
                     <taipy:text>Instructions: </taipy:text>
                     <br></br>
-                    <taipy:text>{final_rec[2]}</taipy:text>
+                    <taipy:text>{final_rec[0][1]}</taipy:text>
                     
+                    <taipy:text> {final_rec[1][0]} </taipy:text>
+                    <br></br>
+                    <br></br>
+                    <taipy:text>Match %: </taipy:text>
+                    <br></br>
+                    <taipy:text> {final_rec[1][3]}</taipy:text>
+                    <taipy:text>Ingredients: </taipy:text>
+                    <br></br>
+                    <taipy:text> {final_rec[1][2]}</taipy:text>
+                    <br></br>
+                    <br></br>
+                    <taipy:text>Instructions: </taipy:text>
+                    <br></br>
+                    <taipy:text>{final_rec[1][1]}</taipy:text>
+
+                    <taipy:text> {final_rec[2][0]} </taipy:text>
+                    <br></br>
+                    <br></br>
+                    <taipy:text>Match %: </taipy:text>
+                    <br></br>
+                    <taipy:text> {final_rec[2][3]}</taipy:text>
+                    <taipy:text>Ingredients: </taipy:text>
+                    <br></br>
+                    <taipy:text> {final_rec[2][2]}</taipy:text>
+                    <br></br>
+                    <br></br>
+                    <taipy:text>Instructions: </taipy:text>
+                    <br></br>
+                    <taipy:text>{final_rec[2][1]}</taipy:text>
+
+                    <taipy:text> {final_rec[3][0]} </taipy:text>
+                    <br></br>
+                    <br></br>
+                    <taipy:text>Match %: </taipy:text>
+                    <br></br>
+                    <taipy:text> {final_rec[3][3]}</taipy:text>
+                    <taipy:text>Ingredients: </taipy:text>
+                    <br></br>
+                    <taipy:text> {final_rec[3][2]}</taipy:text>
+                    <br></br>
+                    <br></br>
+                    <taipy:text>Instructions: </taipy:text>
+                    <br></br>
+                    <taipy:text>{final_rec[3][1]}</taipy:text>
                     """)
-        Gui(page).run()
+        Gui(page).run(port=5006)
 
 
 # Function to process user's ingredients and allergies, and then find recipes
@@ -97,18 +144,20 @@ def findRecipes(userIngredient, userAllergy):
         for j in range(len(ingredientsToSearch[i])): # cycle through each ingredient in the recipe
             for k in range(len(userIngredient)): # cycle through the ingredients which the user has
                 if(userIngredient[k] in ingredientsToSearch[i][j]): # if the user has the ingredient that is specified
-                    count += 1 
+                    count += 1
                     #print("User ingredient:", userIngredient[k]) #TEST
                     #print("Recipe ingredient:", ingredientsToSearch[i][j]) #TEST
         counts.append(count)
     #print(counts) # TESTING
 
+    print(counts)
+    print(countsMax)
     for i in range(0, len(ingredientsToSearch)) :
         matchRatio.append([round(counts[i]/countsMax[i][0], 3), countsMax[i][1]]) # finds the percentage match between the ingredients and the recipes. the closer it is to 1, the better the match.
-    #print(matchRatio) #TESTING
+    print(matchRatio) #TESTING
 
     matchRatio.sort(reverse=True) # sorts greatest to least.
-    #print(matchRatio) #TESTING
+    print(matchRatio) #TESTING
 
     #for i in range(0, len(matchRatio)) :
     for i in range(min(4, len(matchRatio))) :
@@ -118,17 +167,19 @@ def findRecipes(userIngredient, userAllergy):
         
         title = (df["Title"].iloc[matchRatio[i][1]])
         instructions = (df["Instructions"].iloc[matchRatio[i][1]])
-        ingredients = "Ingredients: "
+        ingredients = ""
         for j in range(len(ingredientsToSearch[matchRatio[i][1]])): # printing the list of ingredients properly
             if(j != len(ingredientsToSearch[matchRatio[i][1]]) - 1):
                 ingredients = ingredients + ingredientsToSearch[matchRatio[i][1]][j] + ", "
             else:
                 ingredients = ingredients + ingredientsToSearch[matchRatio[i][1]][j]
-        ingredientMatch = str(round(matchRatio[i][0] * 100, 3)) + "%"
+        ingredientMatch = str(round(matchRatio[i][0], 3) * 100) + "%"
 
-        recommendations.append({ "title": title, "instructions": instructions, "ingredients": ingredients, "match": ingredientMatch })
+        recommendations.append([title, instructions, ingredients, ingredientMatch])
     
     finalRecommendations = recommendations 
+    #print(finalRecommendations)
+    print(finalRecommendations[0][1])
     return finalRecommendations
 
 # Set up GUI
@@ -155,7 +206,7 @@ with tgb.Page() as page:
 
 
 # Run the GUI
-Gui(page).run(port=5006)
+Gui(page).run(port=5005)
 
 
 #for recipes: if the user has all ingredients let them know
