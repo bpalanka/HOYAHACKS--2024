@@ -32,12 +32,12 @@ def on_action(state, id): # method MUST be named as "on_action" format (bc of Ta
 
         # putting the inputs into respective lists.
         if("," not in state.ingredientInput):
-            userIngredient = [state.ingredientInput]    
+            userIngredient = [state.ingredientInput]
         else:
             userIngredient = state.ingredientInput.split(", ")
         
         if("," not in state.allergyInput):
-            userAllergy = [state.allergyInput]    
+            userAllergy = [state.allergyInput]
         else:
             userAllergy = state.allergyInput.split(", ")
         
@@ -46,6 +46,8 @@ def on_action(state, id): # method MUST be named as "on_action" format (bc of Ta
             
         #look for inputs in the recipes
         findRecipes(userIngredient, userAllergy)
+
+
 
 
 # Function to process user's ingredients and allergies, and then find recipes
@@ -76,10 +78,10 @@ def findRecipes(userIngredient, userAllergy):
 
     for i in range(0, len(ingredientsToSearch)) :
         matchRatio.append([round(counts[i]/countsMax[i][0], 3), countsMax[i][1]]) # finds the percentage match between the ingredients and the recipes. the closer it is to 1, the better the match.
-    #print(matchRatio) #TESTING
+    print(matchRatio) #TESTING
 
     matchRatio.sort(reverse=True) # sorts greatest to least.
-    #print(matchRatio) #TESTING
+    print(matchRatio) #TESTING
     
     recs = []
 
@@ -102,17 +104,23 @@ def findRecipes(userIngredient, userAllergy):
 
 
 # Set up GUI
+
 with tgb.Page() as page:
-    tgb.html("h1", "Welcome to Recip.io!")
-    with tgb.layout("4 1"):
+    with tgb.layout("1"):
         with tgb.part():
-            tgb.html("p", "Lets make something.", style="font-weight:bold;")
+            tgb.html("h1", "Welcome to Recip.io!")
             tgb.input("{ingredientInput}", label="List your ingredients...")
             tgb.input("{allergyInput}", "Any ingredients to avoid?", label="List your allergies and avoidances...")
-        tgb.button("Submit", id="submitIngredients")
+            tgb.button("Submit", id="submitIngredients")
+
+        with tgb.part():
+            tgb.html("h2", "{recipe_name}")
+            tgb.html("p", "Ingredients: {final_ingredients}")
+            tgb.html("p", "Instructions: {final_instructions}")
 
 # Run the GUI
 Gui(page).run(port=5006)
+
 
 
 
