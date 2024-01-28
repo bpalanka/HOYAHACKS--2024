@@ -73,6 +73,10 @@ def findRecipes(userIngredient, userAllergy):
                     count += 1 
                     #print("User ingredient:", userIngredient[k]) #TEST
                     #print("Recipe ingredient:", ingredientsToSearch[i][j]) #TEST
+            #added to check for allergies
+            for a in range(len(userAllergy)):
+                if(userAllergy[a] in ingredientsToSearch[i][j]):
+                    count = 0
         counts.append(count)
     #print(counts) # TESTING
 
