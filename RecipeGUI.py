@@ -4,20 +4,28 @@ import taipy
 import csv
 from taipy.gui import Gui, Html
 import taipy.gui.builder as tgb
+import taipy as tp
+
+import ast # converting to list
 
 # Read csv file into data frame
 csv_file_path = "./Ingredients2.csv"
 
 # Attributes
+#ingredientInput = ""
+#allergyInput = ""
+#finalRecommendations = []
+
+# init state
+#state=State()
 ingredientInput = ""
 allergyInput = ""
-final_instructions = ""
-final_ingredients = ""
-recipe_name = ""
+finalRecommendations = []
+
+
 
 try:
     df = pd.read_csv(csv_file_path)
-    allIngredients = df["Ingredients"].str.split(",") 
 except pd.errors.EmptyDataError:
     print("The CSV file is empty.")
 except FileNotFoundError:
@@ -26,96 +34,128 @@ except Exception as e:
     print(f"An error occurred: {e}")
 
 # Function to handle GUI actions
-def on_action(state, id):
+def on_action(state, id): # method MUST be named as "on_action" format (bc of Taipy)
     if id == "submitIngredients": # when you press the submit button for ingredients, this happens
-        ingredientInput = state.ingredientInput.split(", ")
-        index = find_matches()
-        recipe_name, final_ingredients, final_instructions = find_recipe(index)
-        page = Html("""<taipy:text> {recipe_name} </taipy:text>
-                     <br></br>
-                     <br></br>
+        # Accessing state variables
+        userIngredient = ingredientInput
+        userAllergy = allergyInput
+
+        # putting the inputs into respective lists.
+        if("," not in ingredientInput):
+            userIngredient = [ingredientInput]
+        else:
+            userIngredient = ingredientInput.split(", ")
+        
+        if("," not in allergyInput):
+            userAllergy = [allergyInput]
+        else:
+            userAllergy = allergyInput.split(", ")
+        
+        #print(userIngredient) #tests
+        #print(userAllergy)
+            
+        #look for inputs in the recipes
+        final_rec = findRecipes(userIngredient, userAllergy)
+        page = Html("""<taipy:text> {final_rec[0]} </taipy:text>
+                    <br></br>
+                    <br></br>
+                    <taipy:text>Match %: </taipy:text>
+                    <br></br>
+                    <taipy:text> {final_rec[3]}</taipy:text>
                     <taipy:text>Ingredients: </taipy:text>
                     <br></br>
-                    <taipy:text> {final_ingredients}</taipy:text>
+                    <taipy:text> {final_rec[1]}</taipy:text>
                     <br></br>
                     <br></br>
                     <taipy:text>Instructions: </taipy:text>
                     <br></br>
-                    <taipy:text>{final_instructions}</taipy:text>""")
+                    <taipy:text>{final_rec[2]}</taipy:text>
+                    
+                    """)
         Gui(page).run()
 
-# Function to process user input and find recipes
-def findIngredients(ingredients_list):
-    for index, ingredients in allIngredients.items():
-        print(f"Recipe {index} ingredients:")
-        for ingredient in ingredients:
-            print(ingredient.strip())
-        print()
 
-# Finds a matching recipe
-def find_matches():
-    count = 0
-    max = 0
-    index = 0
+# Function to process user's ingredients and allergies, and then find recipes
+def findRecipes(userIngredient, userAllergy):
+    count = 0 # keep track of matches
+    counts = [] # keep track of the amt of matches between the recipes and the user's ingredients
+    countsMax = [] # max matches of ingredients (total amt of their ingredients)
 
-    for i in range(len(allIngredients)):
-        #LIST OF INGREDIENTS WITHIN A RECIPE
-        count = 0
-        for j in range(len(allIngredients[i])):
-             #COMPARE INPUT LIST AND allIngredients[i]
-             for k in range(len(ingredientInput)):
-                 if(ingredientInput[k] in allIngredients[i][j]):
-                     count += 1
-        if(count > max):
-            max = count
-            index = i
-    return index
+    matchRatio = []
     
+    recommendations = []
 
-# Finds the best recipe
-def find_recipe(index):
-    df = pd.read_csv(csv_file_path) # df["Ingredients"] - to access ingredients.
-    allIngredients = df["Ingredients"].str.split("', '")
+    # Convert string rep of lists in 'Ingredients' to actual lists
+    ingredientsToSearch = [ast.literal_eval(ingredients) for ingredients in df["Ingredients"]] # do NOT ask me how this works. -Arman
 
-    #*****DISPLAYING***********
-    #display the info for the recipe that matches (use index variable in the nested for loops above)
-    print("We found a recipe that contains the list of ingredients that you have listed.")
+    for i in range(0, len(ingredientsToSearch)) :
+        countsMax.append([len(ingredientsToSearch[i]), i]) # creates list of all the max matches of ingredients.
+    #print(countsMax) # TESTING
 
-    #find recipe name
-    recipe_name = df["Title"]
+    for i in range(0, len(ingredientsToSearch)): # cycle through the recipes
+        count = 0 # ingredient match count reset to 0
+        for j in range(len(ingredientsToSearch[i])): # cycle through each ingredient in the recipe
+            for k in range(len(userIngredient)): # cycle through the ingredients which the user has
+                if(userIngredient[k] in ingredientsToSearch[i][j]): # if the user has the ingredient that is specified
+                    count += 1 
+                    #print("User ingredient:", userIngredient[k]) #TEST
+                    #print("Recipe ingredient:", ingredientsToSearch[i][j]) #TEST
+        counts.append(count)
+    #print(counts) # TESTING
 
-    #recipe name
-    print("Recipe Name: ", recipe_name[index])
+    for i in range(0, len(ingredientsToSearch)) :
+        matchRatio.append([round(counts[i]/countsMax[i][0], 3), countsMax[i][1]]) # finds the percentage match between the ingredients and the recipes. the closer it is to 1, the better the match.
+    #print(matchRatio) #TESTING
 
-    # Ingredients
-    print("Ingredients: ")
-    ingredient_list = []
-    #print(allIngredients[index])
-    for i in range(len(allIngredients[index])):
-        ingredient_list.append(allIngredients[index][i])
-        #print(allIngredients[index][i])
+    matchRatio.sort(reverse=True) # sorts greatest to least.
+    #print(matchRatio) #TESTING
 
-    #instructions
-    instructList = df["Instructions"]
-    #print("Instructions: ", instructList[index])
+    #for i in range(0, len(matchRatio)) :
+    for i in range(min(4, len(matchRatio))) :
+        #recs.append[[df["Title"].iloc[matchRatio[i][1]]], [df["Instructions"].iloc[matchRatio[i][1]]], [df["Ingredients"].iloc[matchRatio[i][1]]] ]
+        if(matchRatio[i][0] == 0):
+            break
+        
+        title = (df["Title"].iloc[matchRatio[i][1]])
+        instructions = (df["Instructions"].iloc[matchRatio[i][1]])
+        ingredients = "Ingredients: "
+        for j in range(len(ingredientsToSearch[matchRatio[i][1]])): # printing the list of ingredients properly
+            if(j != len(ingredientsToSearch[matchRatio[i][1]]) - 1):
+                ingredients = ingredients + ingredientsToSearch[matchRatio[i][1]][j] + ", "
+            else:
+                ingredients = ingredients + ingredientsToSearch[matchRatio[i][1]][j]
+        ingredientMatch = str(round(matchRatio[i][0] * 100, 3)) + "%"
 
-    return recipe_name[index], ingredient_list, instructList[index]
+        recommendations.append({ "title": title, "instructions": instructions, "ingredients": ingredients, "match": ingredientMatch })
+    
+    finalRecommendations = recommendations 
+    return finalRecommendations
 
 # Set up GUI
 with tgb.Page() as page:
-    tgb.html("h1", "Welcome to Recip.io!")
-    with tgb.layout("4 1"):
+    with tgb.layout("1"):
         with tgb.part():
-            tgb.html("p", "Lets make something.", style="font-weight:bold;")
+            tgb.html("h1", "Welcome to Recip.io!")
             tgb.input("{ingredientInput}", label="List your ingredients...")
-            #tgb.input("{allergyInput}", "Any ingredients to avoid?", label="List your allergies and avoidances...")
-        tgb.button("Submit", id="submitIngredients")
+            tgb.input("{allergyInput}", "Any ingredients to avoid?", label="List your allergies and avoidances...")
+            tgb.button("Submit", id="submitIngredients")
+
+        with tgb.part():
+            tgb.html("h2", "{recipe_name}")
+            tgb.html("p", "Ingredients: {final_ingredients}")
+            tgb.html("p", "Instructions: {final_instructions}")
+
+
+
+        #recommendation_elements = create_recommendation_elements(finalRecommendations)
+        #for element in recommendation_elements:
+        #    with tgb.part():
+        #        element
+
+
 
 # Run the GUI
-Gui(page=page).run(port=5005)
-
-
-
+Gui(page).run(port=5006)
 
 
 #for recipes: if the user has all ingredients let them know
