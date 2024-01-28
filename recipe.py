@@ -43,6 +43,7 @@ def on_action(state, id): # method MUST be named as "on_action" format (bc of Ta
         # putting the inputs into respective lists.
         if("," not in ingredientInput):
             userIngredient = [ingredientInput]
+            print(userIngredient)
         else:
             userIngredient = ingredientInput.split(", ")
         
@@ -60,13 +61,7 @@ def on_action(state, id): # method MUST be named as "on_action" format (bc of Ta
                     <taipy:text> {final_rec[0][0]} </taipy:text>
                     <br></br>
                     <br></br>
-                    <taipy:text>Match %: </taipy:text>
-                    <br></br>
-                    <br></br>
-                    <taipy:text> {final_rec[0][3]}</taipy:text>
-                    <taipy:text>Ingredients: </taipy:text>
-                    <br></br>
-                    <br></br>
+                    
                     <taipy:text> {final_rec[0][2]}</taipy:text>
                     <br></br>
                     <br></br>
@@ -76,11 +71,6 @@ def on_action(state, id): # method MUST be named as "on_action" format (bc of Ta
                     
                     <taipy:text> {final_rec[1][0]} </taipy:text>
                     <br></br>
-                    <br></br>
-                    <taipy:text>Match %: </taipy:text>
-                    <br></br>
-                    <taipy:text> {final_rec[1][3]}</taipy:text>
-                    <taipy:text>Ingredients: </taipy:text>
                     <br></br>
                     <taipy:text> {final_rec[1][2]}</taipy:text>
                     <br></br>
@@ -92,9 +82,6 @@ def on_action(state, id): # method MUST be named as "on_action" format (bc of Ta
                     <taipy:text> {final_rec[2][0]} </taipy:text>
                     <br></br>
                     <br></br>
-                    <taipy:text>Match %: </taipy:text>
-                    <br></br>
-                    <taipy:text> {final_rec[2][3]}</taipy:text>
                     <taipy:text>Ingredients: </taipy:text>
                     <br></br>
                     <taipy:text> {final_rec[2][2]}</taipy:text>
@@ -108,9 +95,6 @@ def on_action(state, id): # method MUST be named as "on_action" format (bc of Ta
                     <br></br>
                     <br></br>
                     <taipy:text>Match %: </taipy:text>
-                    <br></br>
-                    <taipy:text> {final_rec[3][3]}</taipy:text>
-                    <taipy:text>Ingredients: </taipy:text>
                     <br></br>
                     <taipy:text> {final_rec[3][2]}</taipy:text>
                     <br></br>
@@ -136,7 +120,7 @@ def findRecipes(userIngredient, userAllergy):
     ingredientsToSearch = [ast.literal_eval(ingredients) for ingredients in df["Ingredients"]] # do NOT ask me how this works. -Arman
 
     for i in range(0, len(ingredientsToSearch)) :
-        countsMax.append([len(ingredientsToSearch[i]), i]) # creates list of all the max matches of ingredients.
+        countsMax.append([len(ingredientsToSearch[i]), i]) # creates list of all the max matches of ingredients. and also the indeces
     #print(countsMax) # TESTING
 
     for i in range(0, len(ingredientsToSearch)): # cycle through the recipes
@@ -144,6 +128,8 @@ def findRecipes(userIngredient, userAllergy):
         for j in range(len(ingredientsToSearch[i])): # cycle through each ingredient in the recipe
             for k in range(len(userIngredient)): # cycle through the ingredients which the user has
                 if(userIngredient[k] in ingredientsToSearch[i][j]): # if the user has the ingredient that is specified
+                    print(userIngredient[k])
+                    #print(ingredientsToSearch[i][j])
                     count += 1
                     #print("User ingredient:", userIngredient[k]) #TEST
                     #print("Recipe ingredient:", ingredientsToSearch[i][j]) #TEST
