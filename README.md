@@ -1,5 +1,6 @@
 # LetsCookForUs
-
+Authors: Arman Mahjoor, Annekke van Gelder, Sasha Cherian, Bela Palankar
+HoyaHacks 2024 - Taipy track
 Getting Started
 
     To use LetsCookForUs, follow these simple steps:
