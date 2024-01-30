@@ -4,10 +4,17 @@ Getting Started
 
     To use LetsCookForUs, follow these simple steps:
 
-Input Ingredients:
+1. Input Ingredients:
 
-    Begin by providing a list of ingredients you currently have. You can enter them manually or use the barcode scanner for convenience.
+    As of now, begin by running the recipe.py file. It will open a page where you can input the ingredients and your allergies.
 
-Specify Allergies:
+2. Specify Allergies:
 
-    Let us know about any allergies you or your guests may have. This ensures that the recipes suggested are safe and suitable for everyone.
+    Let us know about any allergies you may have. Our goal with this project is to eventually include a place for the user to input any diets they follow (such as vegetarian).
+   
+4. Click submit:
+   
+    This will display a list of recipes that match your ingredient list. The match percentage at the top is the proportion of the ingredients the user has over the ingredients needed for the recipe. This list is ordered based on the match percentage.
+
+
+   
