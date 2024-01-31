@@ -3,6 +3,9 @@ Authors: Arman Mahjoor, Annekke van Gelder, Sasha Cherian, Bela Palankar
 
 HoyaHacks 2024 - Taipy track
 
+Issues and Pull Requests: 
+
+We truly appreciate your feedback, but as stated at the bottom of this README file, this project is in progress. There are places that we see that we need to improve and will be doing so, this code is incomplete and we are doing our best to make improvements! Under the time limits of the hackathon, we could not accomplish everything we hoped to get done. We wish to improve on this shell code and make edits as we see fit. We have received feedback from the judges that we will be taking into account. Thank you!
 
 Getting Started
 
