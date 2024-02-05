@@ -1,4 +1,4 @@
-# LetsCookForUs
+# Recipio
 Authors: Arman Mahjoor, Annekke van Gelder, Sasha Cherian, Bela Palankar
 
 HoyaHacks 2024 - Taipy track
